@@ -22,8 +22,20 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+/**
+ * La clase Traspaso es responsable de procesar y manejar las incidencias leídas
+ * desde un archivo de texto, imprimir las incidencias en la consola y
+ * guardarlas en un archivo XML.
+ *
+ * @author <a href="https://about.me/prof.guazina">Fauno Guazina</a>
+ * @version 1.0
+ * @since 2024-02-14
+ */
 public class Traspaso {
 
+	/**
+	 * El Logger para registrar los mensajes de la aplicación.
+	 */
 	private static final Logger logger = Logger.getLogger(Traspaso.class.getName());
 
 	public static void main(String[] args) {
@@ -48,6 +60,10 @@ public class Traspaso {
 		}
 	}
 
+	/**
+	 * Configura los manejadores de registro para el Logger. El archivo "logs.txt"
+	 * estará en la raiz del proyecto.
+	 */
 	private static void configLoggerHandler() {
 		try {
 			// Configurar el nivel de registro mínimo
@@ -72,6 +88,12 @@ public class Traspaso {
 		}
 	}
 
+	/**
+	 * Obtiene la ruta del archivo de texto que contiene las incidencias.
+	 *
+	 * @return La ruta del archivo de texto si se encuentra, o null si no se
+	 *         encuentra.
+	 */
 	private static String filePathToIncidenciasTxt() {
 		// Obtener la ruta base del proyecto
 		String basePath = System.getProperty("user.dir");
@@ -105,6 +127,14 @@ public class Traspaso {
 	}
 
 
+	/**
+	 * Lee las incidencias desde el archivo de texto y las devuelve como un objeto
+	 * Incidencias.
+	 *
+	 * @param filePath La ruta del archivo de texto que contiene las incidencias.
+	 * @return Un objeto Incidencias que contiene las incidencias leídas, o null si
+	 *         hay un error.
+	 */
 	private static Incidencias leerIncidenciasDesdeArchivo(String filePath) {
         Incidencias incidencias = new Incidencias();
         List<Incidencias.Incidencia> listaIncidencias = new ArrayList<>();
@@ -154,6 +184,12 @@ public class Traspaso {
         return incidencias;
     }
 
+	/**
+	 * Convierte un objeto Date en un objeto XMLGregorianCalendar.
+	 *
+	 * @param date El objeto Date a convertir.
+	 * @return El objeto XMLGregorianCalendar resultante.
+	 */
 	private static XMLGregorianCalendar toXMLGregorianCalendar(Date date) {
 		try {
 			GregorianCalendar cal = new GregorianCalendar();
@@ -165,6 +201,11 @@ public class Traspaso {
 		}
 	}
 
+	/**
+	 * Imprime las incidencias en la consola.
+	 *
+	 * @param incidencias El objeto Incidencias a imprimir.
+	 */
 	private static void printIncidencias(Incidencias incidencias) {
 		// Imprimimos las incidencias leídas
 		// Verificamos si se han leído correctamente las incidencias
@@ -182,6 +223,11 @@ public class Traspaso {
 		}
 	}
 
+	/**
+	 * Escribe las incidencias en un archivo XML.
+	 *
+	 * @param incidencias El objeto Incidencias a escribir en el archivo XML.
+	 */
 	private static void escribirIncidenciasEnXML(Incidencias incidencias) {
 		try {
 			// Crear el contexto JAXB
