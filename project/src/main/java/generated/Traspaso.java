@@ -29,9 +29,14 @@ public class Traspaso {
 			// Lista para almacenar las incidencias
 			Incidencias incidencias = leerIncidenciasDesdeArchivo(filePath);
 
-			printIncidencias(incidencias);
+			// Verificar si se leyeron las incidencias correctamente
+			if (incidencias != null) {
+				printIncidencias(incidencias);
+				escribirIncidenciasEnXML(incidencias);
+			} else {
+				logger.severe("Error al leer las incidencias desde el archivo.");
+			}
 
-			escribirIncidenciasEnXML(incidencias);
 		}
 	}
 
