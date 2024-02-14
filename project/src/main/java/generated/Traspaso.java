@@ -30,6 +30,8 @@ public class Traspaso {
 			Incidencias incidencias = leerIncidenciasDesdeArchivo(filePath);
 
 			printIncidencias(incidencias);
+
+			escribirIncidenciasEnXML(incidencias);
 		}
 	}
 
@@ -136,6 +138,45 @@ public class Traspaso {
 			}
 		} else {
 			System.out.println("Error al leer las incidencias desde el archivo.");
+		}
+	}
+
+	private static void escribirIncidenciasEnXML(Incidencias incidencias) {
+		try {
+			// Crear el contexto JAXB
+			JAXBContext context = JAXBContext.newInstance(Incidencias.class);
+
+			// Crear el marshaller
+			Marshaller marshaller = context.createMarshaller();
+
+			// Formatear la salida XML
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			// Crear la carpeta "resultsXml" en la raíz del proyecto si no existe
+			String basePath = System.getProperty("user.dir");
+			File resultsFolder = new File(basePath, "resultsXml");
+			if (!resultsFolder.exists()) {
+				if (resultsFolder.mkdir()) {
+					System.out.println("Se ha creado la carpeta 'resultsXml'.");
+				} else {
+					System.out.println("Error: No se pudo crear la carpeta 'resultsXml'.");
+					return;
+				}
+			}
+
+			// Crear el archivo "incidencias.xml" en la carpeta "resultsXml"
+			File file = new File(resultsFolder, "incidencias.xml");
+
+			// Sobrescribir el archivo si ya existe
+			if (file.exists()) {
+				file.delete();
+			}
+
+			// Escribir las incidencias en el archivo XML
+			marshaller.marshal(incidencias, file);
+			System.out.println("Se han guardado las incidencias en el archivo 'incidencias.xml'.");
+		} catch (JAXBException e) {
+			e.printStackTrace();
 		}
 	}
 
