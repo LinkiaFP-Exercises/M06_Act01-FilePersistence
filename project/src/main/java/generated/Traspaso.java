@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -19,7 +23,12 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Traspaso {
+
+	private static final Logger logger = Logger.getLogger(Traspaso.class.getName());
+
 	public static void main(String[] args) {
+
+		configLoggerHandler();
 
 		// Definir la ruta del archivo de texto
 		String filePath = filePathToIncidenciasTxt();
@@ -36,7 +45,30 @@ public class Traspaso {
 			} else {
 				logger.severe("Error al leer las incidencias desde el archivo.");
 			}
+		}
+	}
 
+	private static void configLoggerHandler() {
+		try {
+			// Configurar el nivel de registro mínimo
+			logger.setLevel(Level.ALL);
+
+			// Crear un FileHandler para guardar los registros en un archivo de texto
+			FileHandler fileHandler = new FileHandler("logs.txt");
+			fileHandler.setLevel(Level.ALL);
+			// Establecer el formato del registro
+			fileHandler.setFormatter(new java.util.logging.SimpleFormatter());
+
+			// Crear un ConsoleHandler para imprimir en cosola
+			ConsoleHandler consoleHandler = new ConsoleHandler();
+			consoleHandler.setLevel(Level.ALL);
+
+			// Agregar el FileHandler y ConsoleHandler al logger
+			logger.addHandler(fileHandler);
+			logger.addHandler(consoleHandler);
+
+		} catch (IOException e) {
+			logger.severe("Error al configurar el manejador de archivo de registro: " + e.getMessage());
 		}
 	}
 
@@ -53,16 +85,16 @@ public class Traspaso {
 		// Verificar si la carpeta no existe y crearla si es necesario
 		if (!folder.exists()) {
 			if (folder.mkdir()) {
-				System.out.println("Se ha creado la carpeta '" + folderName + "'.");
+				logger.fine("Se ha creado la carpeta '" + folderName + "'.");
 			} else {
-				System.out.println("Error: No se pudo crear la carpeta '" + folderName + "'.");
+				logger.severe("Error: No se pudo crear la carpeta '" + folderName + "'.");
 				return null;
 			}
 		}
 
 		// Verificar si la carpeta está vacía
 		if (folder.listFiles() == null || folder.listFiles().length == 0) {
-			System.out.println("Error: La carpeta '" + folderName + "' está vacía.");
+			logger.severe("Error: La carpeta '" + folderName + "' está vacía.");
 			return null;
 		}
 
@@ -115,7 +147,7 @@ public class Traspaso {
 
 			incidencias.incidencia = listaIncidencias;
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+			logger.severe(e.getLocalizedMessage());
             return null;
         }
 
@@ -128,7 +160,7 @@ public class Traspaso {
 			cal.setTime(date);
 			return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
 		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
+			logger.severe(e.getLocalizedMessage());
 			return null;
 		}
 	}
@@ -137,12 +169,16 @@ public class Traspaso {
 		// Imprimimos las incidencias leídas
 		// Verificamos si se han leído correctamente las incidencias
 		if (incidencias != null) {
-			// Imprimimos las incidencias leídas
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// Imprimimos las incidencias leídas en log y consola
 			for (Incidencias.Incidencia incidencia : incidencias.getIncidencia()) {
-				System.out.println(incidencia);
+				logger.finest("Incidencia de fecha : "
+						+ dateFormat.format(incidencia.getFechahora().toGregorianCalendar().getTime())
+							+ " convertida correctamente!");
+				System.out.println(incidencia.toString());
 			}
 		} else {
-			System.out.println("Error al leer las incidencias desde el archivo.");
+			logger.severe("Error al leer las incidencias desde el archivo.");
 		}
 	}
 
@@ -162,9 +198,9 @@ public class Traspaso {
 			File resultsFolder = new File(basePath, "resultsXml");
 			if (!resultsFolder.exists()) {
 				if (resultsFolder.mkdir()) {
-					System.out.println("Se ha creado la carpeta 'resultsXml'.");
+					logger.config("Se ha creado la carpeta 'resultsXml'.");
 				} else {
-					System.out.println("Error: No se pudo crear la carpeta 'resultsXml'.");
+					logger.severe("Error: No se pudo crear la carpeta 'resultsXml'.");
 					return;
 				}
 			}
@@ -175,13 +211,14 @@ public class Traspaso {
 			// Sobrescribir el archivo si ya existe
 			if (file.exists()) {
 				file.delete();
+				logger.config("Se ha borrado el anterior archivo 'incidencias.xml'.");
 			}
 
 			// Escribir las incidencias en el archivo XML
 			marshaller.marshal(incidencias, file);
-			System.out.println("Se han guardado las incidencias en el archivo 'incidencias.xml'.");
+			logger.fine("Se han guardado las incidencias en el archivo 'incidencias.xml'.");
 		} catch (JAXBException e) {
-			e.printStackTrace();
+			logger.severe(e.getLocalizedMessage());
 		}
 	}
 
