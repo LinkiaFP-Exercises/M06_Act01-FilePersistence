@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <!-- Definición del elemento incidencias -->
+  <xs:element name="incidencias">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="incidencia" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="origen" type="xs:string" />
+              <xs:element name="destino" type="xs:string" />
+              <xs:element name="detalle" type="xs:string" />
+              <xs:element name="tipo">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="Urgente" />
+                    <xs:enumeration value="Normal" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="fechahora" type="xs:dateTime" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
